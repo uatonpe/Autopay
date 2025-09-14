@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AUTO PAY DASHBOARD</title>
+    <style>
+        /* --- Global Styles & Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary-color: #0052cc;
+            --primary-light: #f4f7ff;
+            --secondary-color: #4a4a4a;
+            --border-color: #dfe1e6;
+            --background-color: #f9fafb;
+            --success-color: #00875a;
+            --danger-color: #de350b;
+            --warning-color: #ffab00;
+            --success-bg: #e3fcef;
+            --danger-bg: #ffebe6;
+            --warning-bg: #fff0b3;
+            --white-color: #ffffff;
+            --shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+            line-height: 1.6;
+        }
+
+        /* --- Main Layout --- */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background-color: var(--white-color);
+            padding: 20px 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        /* --- Unit Selection Screen --- */
+        .unit-selector-view {
+            text-align: center;
+            padding: 60px 20px;
+            background-color: var(--white-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .unit-selector-view h2 {
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        #unitSelector {
+            font-size: 16px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            min-width: 300px;
+            cursor: pointer;
+            background-color: var(--white-color);
+        }
+        
+        /* --- Dashboard View (Initially Hidden) --- */
+        .dashboard-view {
+            display: none; /* Initially hidden */
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .dashboard-header span {
+            font-weight: 400;
+            color: #7a869a;
+        }
+
+        /* --- KPI Cards --- */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .kpi-card {
+            background-color: var(--white-color);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .kpi-card h3 {
+            font-size: 14px;
+            color: #7a869a;
+            font-weight: 500;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .kpi-card .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .kpi-card .value.rate {
+            color: var(--success-color);
+        }
+
+        /* --- Filter Controls --- */
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+            background-color: var(--white-color);
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-group label {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: #7a869a;
+        }
+        
+        .filter-group input, .filter-group select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        .search-customer {
+            flex-grow: 1;
+        }
+        
+        .search-customer input {
+            width: 100%;
+        }
+
+        .status-filters button {
+            padding: 10px 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--white-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .status-filters button.active {
+            background-color: var(--primary-color);
+            color: var(--white-color);
+            border-color: var(--primary-color);
+        }
+
+        /* --- Data Table --- */
+        .table-container {
+            background-color: var(--white-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow-x: auto; /* For responsiveness */
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background-color: var(--primary-light);
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--secondary-color);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background-color: #f7f7f7;
+        }
+
+        /* --- Status Badges --- */
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .status-collected {
+            background-color: var(--success-bg);
+            color: var(--success-color);
+        }
+        .status-failed {
+            background-color: var(--danger-bg);
+            color: var(--danger-color);
+        }
+        .status-not-yet {
+            background-color: var(--warning-bg);
+            color: var(--warning-color);
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 50px;
+            font-size: 18px;
+            color: #7a869a;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header class="header">
+            <h1>AUTO PAY DASHBOARD</h1>
+        </header>
+
+        <!-- Initial View: Unit Selection -->
+        <div id="unitSelectorView" class="unit-selector-view">
+            <h2>Welcome. Please select a Unit to begin.</h2>
+            <select id="unitSelector">
+                <option value="">-- Select a Unit --</option>
+                <option value="8007773888">Kallam Unit (8007773888)</option>
+                <option value="9923267111">Kaij Unit (9923267111)</option>
+                <option value="9823775999">Bhoom Unit (9823775999)</option>
+                <option value="8554002642">Tejshri (8554002642)</option>
+            </select>
+        </div>
+
+        <!-- Main Dashboard View (Hidden by default) -->
+        <main id="dashboardView" class="dashboard-view">
+            
+            <div class="dashboard-header">
+                <h2>Now Viewing: <span id="currentUnitName"></span></h2>
+                <button onclick="resetView()">Select a different Unit</button>
+            </div>
+
+            <!-- KPI Section -->
+            <section class="kpi-grid">
+                <div class="kpi-card">
+                    <h3>Total Collected Amount</h3>
+                    <div class="value" id="kpiTotalCollected">₹ 0.00</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Collection Rate</h3>
+                    <div class="value rate" id="kpiCollectionRate">0%</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Total EMIs Due</h3>
+                    <div class="value" id="kpiTotalEmis">0</div>
+                </div>
+                <div class="kpi-card">
+                    <h3>Failed EMIs</h3>
+                    <div class="value" id="kpiFailedEmis" style="color: var(--danger-color);">0</div>
+                </div>
+            </section>
+
+            <!-- Filters Section -->
+            <section class="filter-controls">
+                <div class="filter-group">
+                    <label for="dateFilter">EMI Date</label>
+                    <input type="date" id="dateFilter">
+                </div>
+                <div class="filter-group search-customer">
+                    <label for="searchFilter">Search by Name, Mobile, or Loan No.</label>
+                    <input type="text" id="searchFilter" placeholder="Customer Name, Mobile, or Loan No...">
+                </div>
+                <div class="filter-group status-filters">
+                    <label>Filter by Status</label>
+                    <div>
+                        <button class="status-btn active" data-status="All">All</button>
+                        <button class="status-btn" data-status="Collected">Collected</button>
+                        <button class="status-btn" data-status="Failed">Failed</button>
+                        <button class="status-btn" data-status="Not Yet">Not Yet</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Table Section -->
+            <section class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Loan No.</th>
+                            <th>Date of EMI</th>
+                            <th>Customer Name</th>
+                            <th>Mobile Number</th>
+                            <th>EMI Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataTableBody">
+                        <!-- Dynamic data will be inserted here -->
+                    </tbody>
+                </table>
+                 <div id="noDataMessage" class="no-data" style="display: none;">No matching records found.</div>
+            </section>
+        </main>
+
+    </div>
+
+    <script>
+        // --- MOCK DATABASE ---
+        // In a real application, this data would come from a server API.
+        const mockData = {
+            "8007773888": {
+                name: "Kallam Unit",
+                customers: [
+                    { loanNumber: "LN1001", name: "Rahul Deshpande", mobile: "9876543210", emiDate: "2023-11-05", amount: 5000, status: "Collected" },
+                    { loanNumber: "LN1002", name: "Priya Singh", mobile: "9123456789", emiDate: "2023-11-05", amount: 3500, status: "Collected" },
+                    { loanNumber: "LN1003", name: "Anjali Sharma", mobile: "8877665544", emiDate: "2023-11-05", amount: 7000, status: "Failed" },
+                    { loanNumber: "LN1004", name: "Sameer Patil", mobile: "7766554433", emiDate: "2023-11-05", amount: 4500, status: "Not Yet" },
+                    { loanNumber: "LN1005", name: "Sunita Pawar", mobile: "9988776611", emiDate: "2023-11-10", amount: 6200, status: "Collected" },
+                    { loanNumber: "LN1006", name: "Vikram Rathod", mobile: "8547896521", emiDate: "2023-11-10", amount: 8000, status: "Not Yet" },
+                ]
+            },
+            "9923267111": {
+                name: "Kaij Unit",
+                customers: [
+                    { loanNumber: "LN2001", name: "Amit Kumar", mobile: "9632587410", emiDate: "2023-11-07", amount: 4800, status: "Collected" },
+                    { loanNumber: "LN2002", name: "Deepika Verma", mobile: "8521479630", emiDate: "2023-11-07", amount: 5500, status: "Collected" },
+                    { loanNumber: "LN2003", name: "Manish Joshi", mobile: "7412589630", emiDate: "2023-11-07", amount: 9000, status: "Failed" },
+                ]
+            },
+            "9823775999": {
+                name: "Bhoom Unit",
+                customers: [
+                    { loanNumber: "LN3001", name: "Sneha Jadhav", mobile: "7894561230", emiDate: "2023-11-08", amount: 3200, status: "Collected" },
+                    { loanNumber: "LN3002", name: "Rajesh Gupta", mobile: "9517538246", emiDate: "2023-11-08", amount: 7500, status: "Not Yet" },
+                    { loanNumber: "LN3003", name: "Pooja Mehta", mobile: "8294675130", emiDate: "2023-11-08", amount: 4000, status: "Not Yet" },
+                ]
+            },
+            "8554002642": {
+                name: "Tejshri",
+                customers: [
+                    { loanNumber: "LN4001", name: "Kiran More", mobile: "9879879876", emiDate: "2023-11-09", amount: 12000, status: "Collected" },
+                    { loanNumber: "LN4002", name: "Nisha Desai", mobile: "8768768765", emiDate: "2023-11-09", amount: 6500, status: "Failed" },
+                ]
+            }
+        };
+
+        // --- DOM Elements ---
+        const unitSelector = document.getElementById('unitSelector');
+        const unitSelectorView = document.getElementById('unitSelectorView');
+        const dashboardView = document.getElementById('dashboardView');
+        const currentUnitName = document.getElementById('currentUnitName');
+        const dataTableBody = document.getElementById('dataTableBody');
+        const searchFilter = document.getElementById('searchFilter');
+        const dateFilter = document.getElementById('dateFilter');
+        const statusButtons = document.querySelectorAll('.status-btn');
+        const noDataMessage = document.getElementById('noDataMessage');
+
+        // --- State Management ---
+        let currentUnitData = [];
+        let activeStatusFilter = 'All';
+
+        // --- Utility Functions ---
+        const formatCurrency = (amount) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
+        const getStatusClass = (status) => {
+            if (status === 'Collected') return 'status-collected';
+            if (status === 'Failed') return 'status-failed';
+            return 'status-not-yet';
+        };
+
+        // --- Core Functions ---
+        const renderTable = (data) => {
+            dataTableBody.innerHTML = '';
+            if (data.length === 0) {
+                noDataMessage.style.display = 'block';
+                return;
+            }
+            noDataMessage.style.display = 'none';
+
+            data.forEach(customer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${customer.loanNumber}</td>
+                    <td>${customer.emiDate}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.mobile}</td>
+                    <td>${formatCurrency(customer.amount)}</td>
+                    <td><span class="status-badge ${getStatusClass(customer.status)}">${customer.status}</span></td>
+                `;
+                dataTableBody.appendChild(row);
+            });
+        };
+
+        const updateKPIs = (data) => {
+            const totalCollected = data.filter(c => c.status === 'Collected').reduce((sum, c) => sum + c.amount, 0);
+            const totalDueAmount = data.reduce((sum, c) => sum + c.amount, 0);
+            const collectionRate = totalDueAmount > 0 ? (totalCollected / totalDueAmount) * 100 : 0;
+            const totalEmis = data.length;
+            const failedEmis = data.filter(c => c.status === 'Failed').length;
+
+            document.getElementById('kpiTotalCollected').textContent = formatCurrency(totalCollected);
+            document.getElementById('kpiCollectionRate').textContent = `${collectionRate.toFixed(1)}%`;
+            document.getElementById('kpiTotalEmis').textContent = totalEmis;
+            document.getElementById('kpiFailedEmis').textContent = failedEmis;
+        };
+
+        const applyFilters = () => {
+            const searchTerm = searchFilter.value.toLowerCase();
+            const selectedDate = dateFilter.value;
+
+            let filteredData = currentUnitData.filter(customer => {
+                const matchesSearch = customer.name.toLowerCase().includes(searchTerm) || 
+                                      customer.mobile.includes(searchTerm) ||
+                                      customer.loanNumber.toLowerCase().includes(searchTerm);
+                const matchesDate = !selectedDate || customer.emiDate === selectedDate;
+                const matchesStatus = activeStatusFilter === 'All' || customer.status === activeStatusFilter;
+                return matchesSearch && matchesDate && matchesStatus;
+            });
+            
+            renderTable(filteredData);
+            // We update KPIs based on the filtered data, which might be desired.
+            // If KPIs should always reflect the total for the selected unit regardless of filters,
+            // call updateKPIs(currentUnitData) instead in the unitSelector's event listener.
+            updateKPIs(filteredData);
+        };
+        
+        const resetView = () => {
+             unitSelectorView.style.display = 'block';
+             dashboardView.style.display = 'none';
+             unitSelector.value = '';
+        };
+
+        // --- Event Listeners ---
+        unitSelector.addEventListener('change', (e) => {
+            const selectedUnitId = e.target.value;
+            if (!selectedUnitId) {
+                resetView();
+                return;
+            }
+
+            const unitData = mockData[selectedUnitId];
+            currentUnitData = unitData.customers;
+            currentUnitName.textContent = `${unitData.name} (${selectedUnitId})`;
+
+            // Switch views
+            unitSelectorView.style.display = 'none';
+            dashboardView.style.display = 'block';
+            
+            // Reset filters and render
+            searchFilter.value = '';
+            dateFilter.value = '';
+            activeStatusFilter = 'All';
+            statusButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.status-btn[data-status="All"]').classList.add('active');
+
+            applyFilters();
+        });
+
+        searchFilter.addEventListener('input', applyFilters);
+        dateFilter.addEventListener('change', applyFilters);
+
+        statusButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                statusButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                activeStatusFilter = button.dataset.status;
+                applyFilters();
+            });
+        });
+        
+    </script>
+</body>
+</html>
